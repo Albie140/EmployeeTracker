@@ -6,14 +6,9 @@ var cTable = require("console.table");
 
 var connection = mysql.createConnection({
     host: "localhost",
-
-    // Your port; if not 3306
     port: 3306,
-
-    // Your username
     user: "root",
 
-    // Your password
     password: process.env.DB_PASS,
     database: "employeeTracker_db"
 });
@@ -21,7 +16,7 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
-    //   afterConnection();
+    mainMenu()
 });
 
 function mainMenu() {
@@ -30,31 +25,37 @@ function mainMenu() {
         {
             type: "list",
             name: "startMenu",
-            message: "What would you like to do?",
-            choices: [{ name: "Add Department", value: "addDepartment" }, { name: "View Departments", value: "viewDepartments" },  { name: "Add Role", value: "addRole" }, { name: "View Roles", value: "viewRoles" }, { name: "Add Employee", value: "addEmployee" }, { name: "View Employees", value: "viewEmployees" }]
+            message: "Welcome to the Employee Tracker. What would you like to do?",
+            choices: [{ name: "Add Department", value: "addDepartment" }, { name: "View Departments", value: "viewDepartments" },  { name: "Add Role", value: "addRole" }, { name: "View Roles", value: "viewRoles" }, { name: "Add Employee", value: "addEmployee" }, { name: "View Employees", value: "viewEmployees" }, { name: "Update Employees", value: "updateEmployees" }, { name: "Exit", value: "exit" }]
         }
     ])
         .then(function (answer) {
             if (answer.startMenu === "addEmployee") {
                 addEmployee()
             }
-            // else if (answer.startMenu === "viewEmployees") {
-            //     // viewEmployees()
-            // }
+            else if (answer.startMenu === "viewEmployees") {
+                viewEmployees()
+            }
             else if (
                 answer.startMenu === "addDepartment"
             ) {
                 addDepartment()
             }
-            // else if (answer.startMenu === "viewDepartment") {
-            //     // viewDepartment()
-            // }
+            else if (answer.startMenu === "viewDepartments") {
+                viewDepartments()
+            }
             else if (answer.startMenu === "addRole") {
                 addRole()
             }
-            // else if (answer.startMenu === "viewRoles") {
-            //     // viewRoles()
-            // }
+            else if (answer.startMenu === "viewRoles") {
+                viewRoles()
+            } 
+            // else if(answer.startMenu === "updateEmployees"){
+                // updateEmployees()
+            // } 
+            else if (answer.startMenu === "exit"){
+                endApplication()
+            }
         })
 };
 mainMenu();
@@ -112,10 +113,36 @@ function addDepartment(){
     inquirer.prompt([{
         type: "input",
         name: "departmentName",
-        message: "What is the name of this department?"
+        message: "What is the name of the department that you would like to add?"
     }
 ]) .then(function(answer){
     console.log(answer);
 })
 };
+function viewDepartments(){
+    var query ="SELECT * FROM department";
+    connection.query(query, function(err, deptData){
+        if(err) throw err;
+        console.table ("All Departments", deptData);   
+    })
+};
 
+function viewRoles(){
+    var query = "SELECT * FROM role";
+    connection.query(query, function(err, roleData){
+        if(err) throw err;
+        console.table ("All Roles", roleData);   
+    })
+};
+
+function viewEmployees(){
+    var query = "SELECT * FROM employee";
+    connection.query(query, function(err, empData){
+        if(err) throw err;
+        console.table ("All Employees", empData)
+    })
+};
+
+function endApplication(){
+    connection.end
+}
