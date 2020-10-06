@@ -175,9 +175,10 @@ function updateEmployeeRole() {
 
     inquirer.prompt([
         {
-            type: "input",
+            type: "list",
             name: "first_name",
             message: "What is the first name of the employee whose role you'd like to update?"
+            // choices: [empData]
 
         },
         {
