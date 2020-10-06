@@ -15,24 +15,24 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-    console.log("connected as id " + connection.threadId);
+    // console.log("connected as id " + connection.threadId);
     mainMenu()
 });
 
 function mainMenu() {
-    //questions
+    //questions to initiate the application
     inquirer.prompt([
         {
             type: "list",
             name: "startMenu",
-            message: "Welcome to the Employee Tracker. What would you like to do?",
-            choices: [{ name: "Add Department", value: "addDepartment" }, 
-            { name: "View Departments", value: "viewDepartments" }, 
-            { name: "Add Role", value: "addRole" }, 
-            { name: "View Roles", value: "viewRoles" }, 
-            { name: "Add Employee", value: "addEmployee" }, 
-            { name: "View Employees", value: "viewEmployees" }, 
-            { name: "Update Employee Role", value: "updateEmployeeRole" }, 
+            message: "What would you like to do?",
+            choices: [{ name: "Add Department", value: "addDepartment" },
+            { name: "View Departments", value: "viewDepartments" },
+            { name: "Add Role", value: "addRole" },
+            { name: "View Roles", value: "viewRoles" },
+            { name: "Add Employee", value: "addEmployee" },
+            { name: "View Employees", value: "viewEmployees" },
+            { name: "Update Employee Role", value: "updateEmployeeRole" },
             { name: "Exit", value: "exit" }]
         }
     ])
@@ -57,9 +57,9 @@ function mainMenu() {
             else if (answer.startMenu === "viewRoles") {
                 viewRoles()
             }
-            else if(answer.startMenu === "updateEmployeeRole"){
-            updateEmployeeRole()
-            } 
+            else if (answer.startMenu === "updateEmployeeRole") {
+                updateEmployeeRole()
+            }
             else if (answer.startMenu === "exit") {
                 endApplication()
             }
@@ -93,10 +93,10 @@ function addEmployee() {
                 if (err)
                     throw err;
                 console.log("Success!");
-                mainMenu()
+                mainMenu();
             }
         )
-    })
+})
 };
 
 function addRole() {
@@ -121,8 +121,9 @@ function addRole() {
                 throw err;
             console.log("Success!");
 
-            mainMenu()
-        })
+        });
+
+        mainMenu()
     });
 };
 
@@ -137,63 +138,66 @@ function addDepartment() {
             if (err)
                 throw err;
             console.log("Success!");
-            mainMenu()
-        })
+        });
+        mainMenu()
     })
 };
+//function to view all departments
 function viewDepartments() {
     var query = "SELECT * FROM department";
     connection.query(query, function (err, deptData) {
         if (err) throw err;
         console.table("All Departments", deptData);
-        mainMenu()
-    })
+    });
+    mainMenu()
 };
-
+//function to see the list of roles for this company
 function viewRoles() {
     var query = "SELECT * FROM role";
     connection.query(query, function (err, roleData) {
         if (err) throw err;
         console.table("All Roles", roleData);
-        mainMenu()
-    })
+    });
+    mainMenu()
 };
-
+//function to view all employees of this company
 function viewEmployees() {
-    var query = "SELECT * FROM employee";
+    var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title AS role, role.salary, role.department_id, employee.manager_id, department.departmentName AS department FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id";
     connection.query(query, function (err, empData) {
         if (err) throw err;
         console.table("All Employees", empData);
-        mainMenu()
-    })
-};
 
+    });
+    mainMenu()
+};
+//function to update employees in this company
 function updateEmployeeRole() {
 
     inquirer.prompt([
         {
-            type:"input",
-            message: "What is the first name of the employee whose role you'd like to update?",
-            name: "first_name"
+            type: "input",
+            name: "first_name",
+            message: "What is the first name of the employee whose role you'd like to update?"
+
         },
         {
-            type:"input",
-            message: "Enter new role id",
-            name: "role_id"
+            type: "input",
+            name: "role_id",
+            message: "Enter new role id:"
+
         },
 
-
-    ]).then (function (answer){
-    connection.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [answer.role_id, answer.first_name],
-        function (err, data) {
-            if (err) throw err;
-            console.log("Success!");
-            mainMenu()
-        }
-    )
-})
+    ]).then(function (answer) {
+        connection.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [answer.role_id, answer.first_name],
+            function (err, data) {
+                if (err) throw err;
+                console.log("Success!");
+                mainMenu()
+            }
+        )
+    })
 };
-
+//function to end application, when done
 function endApplication() {
-    connection.end
+    connection.end()
 };
