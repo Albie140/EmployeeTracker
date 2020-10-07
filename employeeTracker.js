@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
     password: process.env.DB_PASS,
     database: "employeeTracker_db"
 });
-
+//Connection
 connection.connect(function (err) {
     if (err) throw err;
     // console.log("connected as id " + connection.threadId);
@@ -66,6 +66,8 @@ function mainMenu() {
         })
 };
 
+
+
 function addEmployee() {
     inquirer.prompt([{
         type: "input",
@@ -100,6 +102,7 @@ function addEmployee() {
 };
 
 function addRole() {
+    
     inquirer.prompt([{
         type: "input",
         name: "title",
@@ -112,18 +115,19 @@ function addRole() {
     },
     {
         type: "input",
-        name: "department_id",
-        message: "Enter the department_id for this role."
+        name: "newRole",
+        message: "Choose a department for the new role.",
+       
     }
     ]).then(function (answer) {
         connection.query("INSERT INTO role (title, salary, department_id) VALUES(?, ?, ?)", [answer.title, answer.salary, answer.department_id], function (err, data) {
             if (err)
                 throw err;
             console.log("Success!");
-
+            mainMenu()
         });
 
-        mainMenu()
+        
     });
 };
 
@@ -138,47 +142,50 @@ function addDepartment() {
             if (err)
                 throw err;
             console.log("Success!");
+            mainMenu()
         });
-        mainMenu()
+        
     })
 };
 //function to view all departments
 function viewDepartments() {
-    var query = "SELECT * FROM department";
+    var query = "SELECT * FROM department;";
     connection.query(query, function (err, deptData) {
         if (err) throw err;
         console.table("All Departments", deptData);
+        mainMenu()
     });
-    mainMenu()
+    
 };
 //function to see the list of roles for this company
 function viewRoles() {
-    var query = "SELECT * FROM role";
+    var query = "SELECT employee.first_name, employee.last_name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id;";
     connection.query(query, function (err, roleData) {
         if (err) throw err;
         console.table("All Roles", roleData);
+        mainMenu()
     });
-    mainMenu()
+    
 };
 //function to view all employees of this company
 function viewEmployees() {
-    var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title AS role, role.salary, role.department_id, employee.manager_id, department.departmentName AS department FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id";
+    var query = "SELECT employee.id, employee.first_name, employee.last_name, role.title AS role, role.salary, role.department_id, employee.manager_id, department.departmentName AS department FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id;";
     connection.query(query, function (err, empData) {
         if (err) throw err;
         console.table("All Employees", empData);
-
+        mainMenu()
     });
-    mainMenu()
+    
 };
 //function to update employees in this company
 function updateEmployeeRole() {
-
+    const allEmployees = allEmployees.map(eachEmployee => employee.first_name)
     inquirer.prompt([
         {
             type: "list",
-            name: "first_name",
-            message: "What is the first name of the employee whose role you'd like to update?"
-            // choices: [empData]
+            name: "employee",
+            message: "Select the employee whose role you'd like to update?",
+         choices: [allEmployees]
 
         },
         {
