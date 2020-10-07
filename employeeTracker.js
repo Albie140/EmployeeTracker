@@ -67,7 +67,6 @@ function mainMenu() {
 };
 
 
-
 function addEmployee() {
     inquirer.prompt([{
         type: "input",
@@ -98,11 +97,11 @@ function addEmployee() {
                 mainMenu();
             }
         )
-})
+    })
 };
 
 function addRole() {
-    
+
     inquirer.prompt([{
         type: "input",
         name: "title",
@@ -116,8 +115,8 @@ function addRole() {
     {
         type: "input",
         name: "newRole",
-        message: "Choose a department for the new role.",
-       
+        message: "Choose a department_id for the new role.",
+
     }
     ]).then(function (answer) {
         connection.query("INSERT INTO role (title, salary, department_id) VALUES(?, ?, ?)", [answer.title, answer.salary, answer.department_id], function (err, data) {
@@ -127,7 +126,7 @@ function addRole() {
             mainMenu()
         });
 
-        
+
     });
 };
 
@@ -144,7 +143,7 @@ function addDepartment() {
             console.log("Success!");
             mainMenu()
         });
-        
+
     })
 };
 //function to view all departments
@@ -155,7 +154,7 @@ function viewDepartments() {
         console.table("All Departments", deptData);
         mainMenu()
     });
-    
+
 };
 //function to see the list of roles for this company
 function viewRoles() {
@@ -165,7 +164,7 @@ function viewRoles() {
         console.table("All Roles", roleData);
         mainMenu()
     });
-    
+
 };
 //function to view all employees of this company
 function viewEmployees() {
@@ -175,28 +174,35 @@ function viewEmployees() {
         console.table("All Employees", empData);
         mainMenu()
     });
-    
+
 };
 //function to update employees in this company
 function updateEmployeeRole() {
-    const allEmployees = allEmployees.map(eachEmployee => employee.first_name)
+    // let empArray = [];
+    // connection.query("SELECT * FROM employee", function (err, answer) {
+    //     for (let i = 0; i < answer.length; i++) {
+    //         let employeeName = answer[i].first_name + " " + answer[i].last_name;
+    //         empArray.push(employeeName)
+    //     }
+    //     console.log(empArray)
+    // })
     inquirer.prompt([
         {
             type: "list",
             name: "employee",
             message: "Select the employee whose role you'd like to update?",
-         choices: [allEmployees]
-
+            // choices: [empArray]
         },
         {
             type: "input",
             name: "role_id",
-            message: "Enter new role id:"
-
+            message: "Enter new role id:",
         },
 
     ]).then(function (answer) {
-        connection.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [answer.role_id, answer.first_name],
+        console.log(answer);
+        // const updateId = {};
+        connection.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [updateId.updateRole, updateId.employeeUpdate],
             function (err, data) {
                 if (err) throw err;
                 console.log("Success!");
